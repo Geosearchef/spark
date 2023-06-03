@@ -18,11 +18,7 @@ package spark.embeddedserver.jetty;
 
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jetty.server.ForwardedRequestCustomizer;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import spark.ssl.SslStores;
@@ -113,7 +109,12 @@ public class SocketConnectorFactory {
         httpConfig.setSecureScheme("https");
         if(trustForwardHeaders)
             httpConfig.addCustomizer(new ForwardedRequestCustomizer());
-        return new HttpConnectionFactory(httpConfig);
+
+        HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
+        httpsConfig.addCustomizer(new SecureRequestCustomizer());
+
+
+        return new HttpConnectionFactory(httpsConfig);
     }
 
 }
